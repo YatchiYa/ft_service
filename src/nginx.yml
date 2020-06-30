@@ -1,0 +1,58 @@
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  - name: https
+    port: 443
+    port: 301
+    protocol: TCP
+    targetPort: 443
+  - name: ssh
+    protocol: TCP
+    port: 4000
+    targetPort: 4000
+  selector:
+    app: nginx
+  type: LoadBalancer
+
+---
+  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx-container
+        env:
+        - name: SSH_USER
+          value: admin
+        - name: SSH_PASSWORD
+          value: admin
+        ports:
+        - name: http
+          containerPort: 80
+        - name: https
+          containerPort: 443
+        - name: ssh
+          containerPort: 4000
