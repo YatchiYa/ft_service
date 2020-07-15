@@ -49,7 +49,7 @@ eval $(minikube docker-env)
 names="nginx influxdb grafana mysql phpmyadmin wordpress telegraf ftps"
 
 kubectl apply -f ./srcs/configmap.yaml
-kubectl create configmap nginxconfigmap --from-file=./nginx/default.conf --from-file=./nginx/proxy.conf > /dev/null
+kubectl create configmap nginxconfigmap --from-file=./srcs/nginx/default.conf --from-file=./srcs/nginx/proxy.conf > /dev/null
 
 for name in $names
 do
