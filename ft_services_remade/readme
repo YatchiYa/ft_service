@@ -1,0 +1,53 @@
+before launch make sure to install minikube, virtualbox, docker
+export MINIKUBE_ACTIVE_DOCKERD=minikube
+export MINIKUBE_HOME=/Users/yarab/goinfre
+sh srcs/scripts_usefull/init_docker.sh
+sh setup.sh
+
+nginx :
+	ssh admin@192.168.99.100 -p 22
+	user : admin
+	pwd : admin
+
+ftps :
+	user : admin
+	pwd : admin
+	kubectl exec -ti FTPS_POD_ID sh
+	lftp
+	open -u admin IP
+
+phpmyadmin :
+	user : wp_admin
+	pwd : admin
+
+wordpress :
+	title : ft_services
+	desc: hello world
+	/wp-admin :
+		user: admin
+		pwd: admin
+
+Grafana :
+	user : admin
+	pwd : yarab
+
+InfluxDb :
+	DB name : telegraf
+	log : admin, yarab
+
+
+crash container :
+	kubectl exec -it $(kubectl get pods | grep mysql | cut -d" " -f1) -- /bin/sh -c "ps"
+	kubectl exec -it $(kubectl get pods | grep mysql | cut -d" " -f1) -- /bin/sh -c "kill number"
+
+
+to clean 
+
+kubectl delete --all deployment
+kubectl delete --all services
+kubectl delete --all secret
+kubectl delete --all configmap
+kubectl delete --all pv,pvc
+kubectl delete --all pod
+# minikube delete
+# docker rmi $(docker images -q)

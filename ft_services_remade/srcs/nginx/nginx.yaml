@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: https
+  - port: 301
+    targetPort: 443
+    name: redirect-301
+  - port: 22
+    targetPort: 22
+    name: ssh
+  selector:
+    app: nginx
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes:
+      - name: secret-volumes
+        secret:
+          secretName: nginxsecret
+      - name: configmap-volumes
+        configMap:
+          name: nginxconfigmap
+      - name: proxy-volumes
+        configMap:
+          name: nginxproxy
+      containers:
+      - name: nginx
+        image: service-nginx
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+        - containerPort: 301
+        - containerPort: 443
+        - containerPort: 22
+        volumeMounts:
+        - mountPath: /etc/nginx/ssl
+          name: secret-volumes
+        - mountPath: /etc/nginx/conf.d
+          name: configmap-volumes
