@@ -1,4 +1,0 @@
-
- kubectl delete service nginx-ssh nginx
-	kubectl get services
-	kubectl get ns
