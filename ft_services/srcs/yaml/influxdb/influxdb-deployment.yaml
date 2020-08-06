@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+spec:
+  selector:
+    matchLabels:
+      app: influxdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: ft_influxdb
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8086
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            httpGet:
+              path: /ping
+              port: 8086
+          volumeMounts:
+            - name: influxdb-data
+              mountPath: /var/lib/influxdb
+            - name: influxdb-config
+              subPath: influxdb.conf
+              mountPath: /etc/influxdb/influxdb.conf
+              readOnly: true
+          envFrom:
+            - secretRef:
+                name: influxdb
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb
+        - name: influxdb-config
+          configMap:
+            name: influxdb

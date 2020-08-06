@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps
+  labels:
+    app: ftps
+spec:
+  selector:
+    matchLabels:
+      app: ftps
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ftps
+    spec:
+      containers:
+      - name: ftps
+        image: ft_ftps
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 20
+            hostPort: 20
+          - containerPort: 21
+            hostPort: 21
+          - containerPort: 21100
+            hostPort: 21100
+          - containerPort: 21101
+            hostPort: 21101
+          - containerPort: 21102
+            hostPort: 21102
+        livenessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          tcpSocket:
+            port: 21
